@@ -35,6 +35,8 @@ require $blogpath . 'zb_system/admin/admin_top.php';
 <div id="divMain">
   <div class="divHeader"><?php echo $blogtitle; ?></div>
   <div class="SubMenu">
+    <a href="main.php" title="首页"><span class="m-left m-now">首页</span></a>
+    <a href="demo_r2.php" title="演示-R2"><span class="m-left">演示-R2</span></a>
   </div>
   <div id="divMain2">
      <form action="<?php echo BuildSafeURL("main.php?act=save");?>" method="post">
