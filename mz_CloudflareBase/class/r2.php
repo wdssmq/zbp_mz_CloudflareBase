@@ -116,23 +116,28 @@ class mz_CloudflareBase_r2
     return $contents;
   }
 
-  public function uploadFile($key, $file, $bucket_name = "")
+  public function uploadFile(&$object_data, $bucket_name = "")
   {
+    $key = $object_data['key'] ?? $object_data['name'];
+    $body = $object_data['body'] ?? $object_data['content'];
+    $type = $object_data['type'] ?? $this->getContentType($key);
+    $acl = $object_data['acl'] ?? 'private';
     try {
       $bucket_name = $this->getBucketName($bucket_name);
       $result = $this->s3_client->putObject([
         'Bucket' => $bucket_name,
         'Key' => $key,
-        'SourceFile' => $file,
-        'ContentType' => $this->getContentType($key),
-        // 'ACL' => 'public-read',
+        // 'SourceFile' => $file,
+        'Body' => $body,
+        'ContentType' => $type,
+        'ACL' => $acl,
       ]);
-      return $result['ObjectURL'];
+      $object_data['url'] = $result['ObjectURL'];
+      return $result;
     } catch (S3Exception $e) {
       $msg = 'Error uploading file: ' . $e->getMessage();
       $this->setErr(1001, $msg);
       return false;
     }
   }
-
 }
