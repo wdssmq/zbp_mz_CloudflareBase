@@ -50,6 +50,11 @@ class mz_CloudflareBase_r2
     );
   }
 
+  private function getBucketName($bucket_name)
+  {
+    return empty($bucket_name) ? $this->bucket_name : $bucket_name;
+  }
+
   public function __construct($account_id, $access_key_id, $access_key_secret, $bucket_name)
   {
     $this->account_id = $account_id;
@@ -59,11 +64,6 @@ class mz_CloudflareBase_r2
 
     $this->credentials = new Credentials($access_key_id, $access_key_secret);
     $this->s3_client = new S3Client($this->BuildS3Opts());
-  }
-
-  public function getBucketName($bucket_name)
-  {
-    return empty($bucket_name) ? $this->bucket_name : $bucket_name;
   }
 
   public function getContentType($file)
