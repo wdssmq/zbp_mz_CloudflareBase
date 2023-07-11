@@ -39,34 +39,34 @@ require $blogpath . 'zb_system/admin/admin_top.php';
     <a href="demo_r2.php" title="演示-R2"><span class="m-left">演示-R2</span></a>
   </div>
   <div id="divMain2">
-     <form action="<?php echo BuildSafeURL("main.php?act=save");?>" method="post">
-       <table width="100%" class="tableBorder">
-       <tr>
-         <th width="10%">项目</th>
-         <th>内容</th>
-         <th width="45%">说明</th>
-       </tr>
-       <tr>
-         <td>R2: 账户 ID</td>
-         <td><?php zbpform::text("account_id", $zbp->Config("mz_CloudflareBase")->account_id, "90%"); ?></td>
-         <td></td>
-       </tr>
-       <tr>
-         <td>R2: 访问密钥 ID</td>
-         <td><?php zbpform::text("access_key_id", $zbp->Config("mz_CloudflareBase")->access_key_id, "90%"); ?></td>
-         <td></td>
-       </tr>
-       <tr>
-         <td>R2: 机密访问密钥</td>
-         <td><?php zbpform::text("access_key_secret", $zbp->Config("mz_CloudflareBase")->access_key_secret, "90%"); ?></td>
-         <td></td>
-       </tr>
-       <tr>
-       <td></td>
-       <td colspan="2"><input type="submit" value="提交" /></td>
-       </tr>
-       </table>
-     </form>
+    <form action="<?php echo BuildSafeURL("main.php?act=save"); ?>" method="post">
+      <table width="100%" class="tableBorder">
+        <tr>
+          <th width="10%">项目</th>
+          <th>内容</th>
+          <th width="45%">说明</th>
+        </tr>
+        <tr>
+          <td>R2: 账户 ID</td>
+          <td><?php zbpform::text("account_id", $zbp->Config("mz_CloudflareBase")->account_id, "90%"); ?></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>R2: 访问密钥 ID</td>
+          <td><?php zbpform::text("access_key_id", $zbp->Config("mz_CloudflareBase")->access_key_id, "90%"); ?></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>R2: 机密访问密钥</td>
+          <td><?php zbpform::text("access_key_secret", $zbp->Config("mz_CloudflareBase")->access_key_secret, "90%"); ?></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td colspan="2"><input type="submit" value="提交" /></td>
+        </tr>
+      </table>
+    </form>
   </div>
 </div>
 
