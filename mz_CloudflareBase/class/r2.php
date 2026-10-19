@@ -102,6 +102,7 @@ class mz_CloudflareBase_r2
     }
   }
 
+  // 新令牌机制下已废弃，只能显式指定 bucket 名称
   public function listBuckets()
   {
     return $this->s3_client->listBuckets();
