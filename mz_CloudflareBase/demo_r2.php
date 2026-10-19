@@ -12,6 +12,16 @@ if (!$zbp->CheckPlugin('mz_CloudflareBase')) {
   die();
 }
 
+$r2Config = $zbp->Config('mz_CloudflareBase');
+if (
+  trim((string) ($r2Config->account_id ?? '')) === ''
+  || trim((string) ($r2Config->access_key_id ?? '')) === ''
+  || trim((string) ($r2Config->access_key_secret ?? '')) === ''
+) {
+  $zbp->ShowError('请先在插件设置中填写完整的 Cloudflare R2 账户 ID 和访问密钥。', __FILE__, __LINE__);
+  die();
+}
+
 // ---------------
 
 $demoOpts = array(
