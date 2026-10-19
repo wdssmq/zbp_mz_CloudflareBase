@@ -1,16 +1,5 @@
 <?php
-require __DIR__ . '/../../../../zb_system/function/c_system_base.php';
-require __DIR__ . '/../../../../zb_system/function/c_system_admin.php';
-$zbp->Load();
-$action = 'root';
-if (!$zbp->CheckRights($action)) {
-  $zbp->ShowError(6);
-  die();
-}
-if (!$zbp->CheckPlugin('mz_CloudflareBase')) {
-  $zbp->ShowError(48);
-  die();
-}
+require __DIR__ . '/common.php';
 
 $r2Config = $zbp->Config('mz_CloudflareBase');
 if (
@@ -95,13 +84,20 @@ PHP;
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>R2 Bucket 鉴权验证</title>
-  <link rel="stylesheet" href="style_r2.css">
-  </head>
-  <body>
-    <main class="r2-check-page">
-      <h1 class="r2-check-title">Cloudflare R2</h1>
-      <section class="r2-check-card">
+  <title>Cloudflare R2 演示</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="demo-page">
+    <h1 class="demo-title">Cloudflare R2</h1>
+    <nav class="demo-nav">
+      <a href="demo_r2.php" class="is-active">R2</a>
+      <?php if (is_file(__DIR__ . '/demo_kv.php')) { ?>
+        <a href="demo_kv.php">Workers KV</a>
+      <?php } ?>
+    </nav>
+    <div class="demo-content">
+      <section class="demo-card">
         <h2>Bucket 鉴权验证</h2>
         <p>通过 HeadBucket 检查当前配置的密钥是否可以访问指定 Bucket，并列出当前可见对象，不读取或修改对象内容。</p>
         <form class="r2-check-form" action="<?php echo BuildSafeURL('demo_r2.php'); ?>" method="post">
@@ -148,11 +144,12 @@ PHP;
           <?php } ?>
         <?php } ?>
       </section>
-      <section class="r2-check-card">
+      <section class="demo-card">
         <h2>调用代码示例</h2>
         <p>以下示例演示先验证 Bucket 权限、读取现有对象列表，再上传文本对象。</p>
-        <pre class="r2-check-code"><code><?php echo htmlspecialchars($codeExample, ENT_QUOTES, 'UTF-8'); ?></code></pre>
+        <pre class="demo-code"><code><?php echo htmlspecialchars($codeExample, ENT_QUOTES, 'UTF-8'); ?></code></pre>
       </section>
-    </main>
-  </body>
+    </div>
+  </main>
+</body>
 </html>
