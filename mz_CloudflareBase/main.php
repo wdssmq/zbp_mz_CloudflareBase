@@ -48,17 +48,22 @@ require $blogpath . 'zb_system/admin/admin_top.php';
           <th width="45%">说明</th>
         </tr>
         <tr>
-          <td>R2: 账户 ID</td>
+          <td>账户 ID</td>
           <td><?php zbpform::text("account_id", $zbp->Config("mz_CloudflareBase")->account_id, "90%"); ?></td>
           <td></td>
         </tr>
         <tr>
-          <td>R2: 访问密钥 ID</td>
+          <td>API 令牌</td>
+          <td><?php zbpform::text("api_token", $zbp->Config("mz_CloudflareBase")->api_token, "90%"); ?></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>访问密钥 ID</td>
           <td><?php zbpform::text("access_key_id", $zbp->Config("mz_CloudflareBase")->access_key_id, "90%"); ?></td>
           <td></td>
         </tr>
         <tr>
-          <td>R2: 机密访问密钥</td>
+          <td>机密访问密钥</td>
           <td><?php zbpform::text("access_key_secret", $zbp->Config("mz_CloudflareBase")->access_key_secret, "90%"); ?></td>
           <td></td>
         </tr>
