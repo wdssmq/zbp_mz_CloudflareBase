@@ -7,8 +7,8 @@
 // https://developers.cloudflare.com/r2/examples/aws/aws-sdk-php/
 
 use Aws\Credentials\Credentials;
+use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
-use Aws\S3\S3Exception;
 
 class mz_CloudflareBase_r2
 {
@@ -17,24 +17,28 @@ class mz_CloudflareBase_r2
   public $access_key_secret  = "<access_key_secret>";
   public $bucket_name        = "<bucket_name>";
 
-  public $err = array(
+  private $errDef = array(
     'code' => 0,
     'msg' => '',
+    'raw_msg' => '',
+    'func' => '',
+    'type' => 'other',
   );
+  public $err;
 
   private $errMap = array(
-    1000 => '未知错误',
-    1001 => '对象操作失败'
+    99 => '未知错误',
+    98 => '没有权限'
   );
 
-  private function setErr($code, $msg = "")
+  private function setErr($code, $msg = "", $func = "", $type = 'other')
   {
+    $this->err = $this->errDef;
     $this->err['code'] = $code;
-    if (empty($msg)) {
-      $this->err['msg'] = $this->errMap[$code];
-    } else {
-      $this->err['msg'] = $msg;
-    }
+    $this->err['msg'] = $this->errMap[$code] ?? ($msg ?: $this->errDef['msg']);
+    $this->err['func'] = $func;
+    $this->err['type'] = $type;
+    $this->err['raw_msg'] = $msg;
   }
 
   private $credentials;
@@ -61,6 +65,7 @@ class mz_CloudflareBase_r2
     $this->access_key_id = $access_key_id;
     $this->access_key_secret = $access_key_secret;
     $this->bucket_name = $bucket_name;
+    $this->err = $this->errDef;
 
     $this->credentials = new Credentials($access_key_id, $access_key_secret);
     $this->s3_client = new S3Client($this->BuildS3Opts());
@@ -105,25 +110,59 @@ class mz_CloudflareBase_r2
   // 新令牌机制下已废弃，只能显式指定 bucket 名称
   public function listBuckets()
   {
-    return $this->s3_client->listBuckets();
+    try {
+      $result = $this->s3_client->listBuckets();
+      return $result;
+    } catch (S3Exception $e) {
+      $this->setErr($e->getCode() ?: 98, $e->getMessage(), 'listBuckets', 's3');
+      return false;
+    } catch (\Throwable $e) {
+      $this->setErr($e->getCode() ?: 98, $e->getMessage(), 'listBuckets', 'other');
+      return false;
+    }
+  }
+
+  public function headBucket($bucket_name = "")
+  {
+    try {
+      $bucket_name = $this->getBucketName($bucket_name);
+      $result = $this->s3_client->headBucket([
+        'Bucket' => $bucket_name
+      ]);
+      return $result;
+    } catch (S3Exception $e) {
+      $this->setErr($e->getCode() ?: 99, $e->getMessage(), 'headBucket', 's3');
+      return false;
+    } catch (\Throwable $e) {
+      $this->setErr($e->getCode() ?: 99, $e->getMessage(), 'headBucket', 'other');
+      return false;
+    }
   }
 
   public function listObjects($bucket_name = "")
   {
-    $bucket_name = $this->getBucketName($bucket_name);
-    $contents = $this->s3_client->listObjectsV2([
-      'Bucket' => $bucket_name
-    ]);
-    return $contents;
+    try {
+      $bucket_name = $this->getBucketName($bucket_name);
+      $result = $this->s3_client->listObjectsV2([
+        'Bucket' => $bucket_name
+      ]);
+      return $result;
+    } catch (S3Exception $e) {
+      $this->setErr($e->getCode() ?: 99, $e->getMessage(), 'listObjects', 's3');
+      return false;
+    } catch (\Throwable $e) {
+      $this->setErr($e->getCode() ?: 99, $e->getMessage(), 'listObjects', 'other');
+      return false;
+    }
   }
 
   public function uploadFile(&$object_data, $bucket_name = "")
   {
-    $key = $object_data['key'] ?? $object_data['name'];
-    $body = $object_data['body'] ?? $object_data['content'];
-    $type = $object_data['type'] ?? $this->getContentType($key);
-    $acl = $object_data['acl'] ?? 'private';
     try {
+      $key = $object_data['key'] ?? $object_data['name'];
+      $body = $object_data['body'] ?? $object_data['content'];
+      $type = $object_data['type'] ?? $this->getContentType($key);
+      $acl = $object_data['acl'] ?? 'private';
       $bucket_name = $this->getBucketName($bucket_name);
       $result = $this->s3_client->putObject([
         'Bucket' => $bucket_name,
@@ -136,8 +175,10 @@ class mz_CloudflareBase_r2
       $object_data['url'] = $result['ObjectURL'];
       return $result;
     } catch (S3Exception $e) {
-      $msg = 'Error uploading file: ' . $e->getMessage();
-      $this->setErr(1001, $msg);
+      $this->setErr($e->getCode() ?: 99, $e->getMessage(), 'uploadFile', 's3');
+      return false;
+    } catch (\Throwable $e) {
+      $this->setErr($e->getCode() ?: 99, $e->getMessage(), 'uploadFile', 'other');
       return false;
     }
   }
